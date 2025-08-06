@@ -1,22 +1,22 @@
-import axios from 'axios';
+import axios from "axios";
 
 const instance = axios.create({
-  baseURL: 'https://mini-linkedin-backend-ornn.onrender.com/api',
-  withCredentials: true,
+	baseURL: "https://mini-linkedin-backend-ornn.onrender.com/api",
+	withCredentials: true
 });
 
 // Add a request interceptor to include the token in headers
 instance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
+	(config) => {
+		const token = localStorage.getItem("token");
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`;
+		}
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	}
 );
 
 export default instance;
