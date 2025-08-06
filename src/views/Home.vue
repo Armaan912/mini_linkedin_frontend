@@ -1,5 +1,12 @@
 <template>
-	<div class="home-container">
+	<div v-if="userLoading" class="home-container">
+		<div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+			<div class="spinner-border" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
+	</div>
+	<div v-else class="home-container">
 		<Header :user="user" @logout="logout" />
 		<div class="container-fluid px-3 mt-3">
 			<div class="row g-3">
@@ -133,6 +140,7 @@
 			</div>
 		</div>
 	</div>
+	</div>
 </template>
 
 <script setup>
@@ -147,9 +155,10 @@ import Header from "../components/Header.vue";
 const auth = useAuthStore();
 const router = useRouter();
 
-const user = auth.user;
+const user = ref(null);
 const posts = ref([]);
 const loading = ref(false);
+const userLoading = ref(true);
 const showCreatePost = ref(false);
 const newPost = ref({
 	content: "",
@@ -157,7 +166,12 @@ const newPost = ref({
 });
 
 onMounted(async () => {
-	if (!user) {
+	// Wait for user to be loaded
+	await auth.loadUser();
+	user.value = auth.user;
+	userLoading.value = false;
+	
+	if (!user.value) {
 		router.push("/login");
 		return;
 	}
@@ -170,10 +184,8 @@ onUnmounted(() => {
 });
 
 const handleClickOutside = (event) => {
-	const dropdown = document.querySelector(".user-dropdown");
-	if (dropdown && !dropdown.contains(event.target)) {
-		showUserDropdown.value = false;
-	}
+	// This function is kept for potential future use
+	// Currently not needed as user dropdown is handled in Header component
 };
 
 const loadPosts = async () => {
@@ -196,9 +208,9 @@ const createPost = async () => {
 		const optimisticPost = {
 			_id: Date.now().toString(),
 			author: {
-				_id: user._id,
-				name: user.name,
-				profileImage: user.profileImage
+				_id: user.value._id,
+				name: user.value.name,
+				profileImage: user.value.profileImage
 			},
 			content: newPost.value.content,
 			image: newPost.value.image
