@@ -139,7 +139,7 @@ const getImageUrl = (imagePath) => {
 	if (imagePath.startsWith("http")) {
 		return imagePath;
 	}
-	return `https://mini-linkedin-backend-ornn.onrender.com/api/${imagePath}`;
+	return `https://mini-linkedin-backend-ornn.onrender.com/${imagePath}`;
 };
 
 const viewUserProfile = (userId) => {
